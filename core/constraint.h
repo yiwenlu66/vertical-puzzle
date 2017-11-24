@@ -1,3 +1,6 @@
+#ifndef CONSTRAINT_H
+#define CONSTRAINT_H
+
 #include <string>
 #include <iostream>
 #include "placeholder.h"
@@ -41,3 +44,5 @@ struct ConstraintChain {
             : constraints(std::move(constraints)) {}
     friend std::ostream &operator<<(std::ostream &stream, ConstraintChain const &constraint_chain);
 };
+
+#endif

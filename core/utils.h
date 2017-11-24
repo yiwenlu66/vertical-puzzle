@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 typedef enum {
     BLANK,
     OPERATOR,
@@ -7,3 +10,5 @@ typedef enum {
 } char_type;
 
 char_type check_char_type(char c);
+
+#endif

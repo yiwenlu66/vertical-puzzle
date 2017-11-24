@@ -1,3 +1,6 @@
+#ifndef PARSERS_H
+#define PARSERS_H
+
 #include <istream>
 #include <tuple>
 #include <stdexcept>
@@ -86,3 +89,5 @@ private:
     std::vector<ConstraintChain> _constraint_chains;
     std::vector<ImplicitVariable> _implicit_variables;
 };
+
+#endif

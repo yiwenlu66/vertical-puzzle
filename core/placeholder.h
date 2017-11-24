@@ -1,3 +1,6 @@
+#ifndef PLACEHOLDER_H
+#define PLACEHOLDER_H
+
 #include <vector>
 #include <iostream>
 
@@ -35,3 +38,5 @@ struct Constant : PlaceHolder {
     explicit Constant(int value) : PlaceHolder(value) {}
     std::ostream &print(std::ostream &stream) const override;
 };
+
+#endif
