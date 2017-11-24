@@ -1,0 +1,7 @@
+ ABC
+* DC
+____
+DEAC
+7ED
+____
+FDBC
