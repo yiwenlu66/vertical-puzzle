@@ -17,6 +17,11 @@ int main(int argc, char *argv[]) {
         for (auto const &multiple_constraint : text_parser.get_multiple_constraints()) {
             std::cout << multiple_constraint << std::endl;
         }
+        std::cout << std::endl;
+        MultipleConstraintParser multiple_constraint_parser(text_parser.get_multiple_constraints());
+        for (auto const &constraint_chain : multiple_constraint_parser.get_constraint_chains()) {
+            std::cout << constraint_chain << std::endl;
+        }
     } catch (TextStreamParserException &e) {
         std::cout << "Parser error at line " << e.lineno << ", column " << e.column << ": " << e.what();
     } catch (std::runtime_error &e) {

@@ -59,3 +59,30 @@ struct TextStreamParserException : std::runtime_error {
     TextStreamParserException(int lineno, int column, std::string msg)
             : std::runtime_error(msg), lineno(lineno), column(column) {}
 };
+
+
+class MultipleConstraintParser {
+public:
+    explicit MultipleConstraintParser(std::vector<MultipleConstraint> const &multiple_constraints)
+        : _multiple_constraints(multiple_constraints), _zero(Constant(0)) {
+        _alloc_implicit_variables();
+        _constraint_chains.reserve(multiple_constraints.size());
+        _parse();
+    }
+    std::vector<ConstraintChain> const & get_constraint_chains() {
+        return _constraint_chains;
+    }
+
+private:
+    std::vector<MultipleConstraint> const &_multiple_constraints;
+
+    void _alloc_implicit_variables();
+    void _parse();
+
+    void _parse_multiple_constraint(MultipleConstraint const &multiple_constraint);
+
+    Constant _zero;
+
+    std::vector<ConstraintChain> _constraint_chains;
+    std::vector<ImplicitVariable> _implicit_variables;
+};

@@ -1,13 +1,14 @@
 #include "placeholder.h"
 #include <iostream>
 
-std::ostream &operator<<(std::ostream &stream, PlaceHolder const &placeholder) {
-    auto p_explicit_variable = dynamic_cast<ExplicitVariable const *>(&placeholder);
-    if (p_explicit_variable) {
-        stream << p_explicit_variable->letter;
-    } else {
-        // constant
-        stream << placeholder.value;
-    }
-    return stream;
+std::ostream& ExplicitVariable::print(std::ostream &stream) const {
+    stream << letter;
+}
+
+std::ostream& ImplicitVariable::print(std::ostream &stream) const {
+    stream << 'i' << no;
+}
+
+std::ostream& Constant::print(std::ostream &stream) const {
+    stream << value;
 }

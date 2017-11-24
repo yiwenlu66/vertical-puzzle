@@ -262,3 +262,72 @@ std::tuple<char, std::vector<PlaceHolder *>, int, int> TextStreamParser::_parse_
     return std::make_tuple(optr, opnd, optr_pos, width);
 }
 
+void MultipleConstraintParser::_alloc_implicit_variables() {
+    size_t implicit_variable_count = 0;
+    for (auto const &multiple_constraint : _multiple_constraints) {
+        implicit_variable_count += (multiple_constraint._max_input_length - 1);
+    }
+    _implicit_variables.reserve(implicit_variable_count);
+}
+
+void MultipleConstraintParser::_parse() {
+    for (auto const &multiple_constraint : _multiple_constraints) {
+        _parse_multiple_constraint(multiple_constraint);
+    }
+}
+
+void MultipleConstraintParser::_parse_multiple_constraint(MultipleConstraint const &multiple_constraint) {
+    std::vector<Constraint> constraints;
+    constraints.reserve(multiple_constraint._max_input_length);
+    for (int i = 0; i < multiple_constraint._max_input_length; ++i) {
+        std::vector<PlaceHolder *> input, output;
+        std::string rpn = multiple_constraint._rpn;
+        input.reserve(multiple_constraint._input.size());
+        output.reserve(static_cast<size_t>(i < multiple_constraint._max_input_length - 1 ? 2 :
+                       std::max(1,
+                                static_cast<int>(multiple_constraint._output.size())
+                                - static_cast<int>(multiple_constraint._max_input_length)
+                                + 1)
+                       ));
+        if (rpn[rpn.size() - 1] == '*') {
+            auto const &input_multiplicand = multiple_constraint._input[0];
+            auto const &input_multiplier = multiple_constraint._input[1];
+            input.push_back(input_multiplicand[input_multiplicand.size() - 1 - i]);
+            input.push_back(input_multiplier[0]);
+        } else {
+            for (auto const &input_item : multiple_constraint._input) {
+                if (input_item.size() > i) {
+                    input.push_back(input_item[input_item.size() - 1 - i]);
+                } else {
+                    input.push_back(&_zero);
+                }
+            }
+        }
+        if (i > 0) {
+            // add carry
+            input.push_back(&_implicit_variables[_implicit_variables.size() - 1]);
+            rpn.append("_+");
+        }
+        if (i < multiple_constraint._max_input_length - 1) {
+            // create new implicit variable
+            _implicit_variables.emplace_back(ImplicitVariable(static_cast<int>(_implicit_variables.size())));
+            output.push_back(&_implicit_variables[_implicit_variables.size() - 1]);
+
+            if (multiple_constraint._output.size() > i) {
+                output.push_back(multiple_constraint._output[multiple_constraint._output.size() - 1 - i]);
+            } else {
+                output.push_back(&_zero);
+            }
+        } else {
+            if (multiple_constraint._output.size() >= multiple_constraint._max_input_length) {
+                for (size_t j = 0; j <= multiple_constraint._output.size() - multiple_constraint._max_input_length; ++j) {
+                    output.push_back(multiple_constraint._output[j]);
+                }
+            } else {
+                output.push_back(&_zero);
+            }
+        }
+        constraints.emplace_back(input, output, rpn);
+    }
+    _constraint_chains.emplace_back(ConstraintChain(std::move(constraints)));
+}
