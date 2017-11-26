@@ -20,7 +20,7 @@ public:
     std::vector<MultipleConstraint> const &get_multiple_constraints() {
         return _multiple_constraints;
     }
-    std::vector<ExplicitVariable> const &get_explicit_variables() {
+    std::vector<ExplicitVariable> &get_explicit_variables() {
         return _explicit_variables;
     }
     std::vector<int> const &get_lut_letter_to_explicit_variable_no() {
@@ -72,7 +72,7 @@ public:
         _constraint_chains.reserve(multiple_constraints.size());
         _parse();
     }
-    std::vector<ConstraintChain> const & get_constraint_chains() {
+    std::vector<ConstraintChain> &get_constraint_chains() {
         return _constraint_chains;
     }
 

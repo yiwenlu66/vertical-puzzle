@@ -3,9 +3,16 @@
 
 #include <vector>
 #include <iostream>
+#include <limits>
 
 struct PlaceHolder {
-    int value;
+    int value = std::numeric_limits<int>::min();
+    int t_bound = std::numeric_limits<int>::max();    // the time when first bound
+
+    bool is_bound(int t) {
+        return t >= t_bound;
+    }
+
     friend std::ostream &operator<<(std::ostream &stream, PlaceHolder const &placeholder) {
         return placeholder.print(stream);
     }
@@ -13,29 +20,35 @@ struct PlaceHolder {
 
 protected:
     explicit PlaceHolder() = default;
-    explicit PlaceHolder(int value) : value(value) {}
+    explicit PlaceHolder(int t_bound, int value) : t_bound(t_bound), value(value) {}
 };
 
-struct ExplicitVariable : PlaceHolder {
-    std::vector<int> t_bound;
+
+struct Variable : PlaceHolder {
+    int no;
+
+    explicit Variable(int no) : PlaceHolder(), no(no) {}
+};
+
+struct ExplicitVariable : Variable {
     char letter;
-    int no;
+
     ExplicitVariable(char letter, int no)
-            : PlaceHolder(-1), letter(letter), no(no) {}
-    bool is_bound() { return !t_bound.empty(); }
+            : Variable(no), letter(letter) {}
+
     std::ostream &print(std::ostream &stream) const override;
 };
 
-struct ImplicitVariable : PlaceHolder {
-    std::vector<int> t_bound;
-    int no;
-    bool is_bound() { return !t_bound.empty(); }
-    explicit ImplicitVariable(int no) : PlaceHolder(-1), no(no) {}
+struct ImplicitVariable : Variable {
+    explicit ImplicitVariable(int no) : Variable(no) {}
+
     std::ostream &print(std::ostream &stream) const override;
 };
+
 
 struct Constant : PlaceHolder {
-    explicit Constant(int value) : PlaceHolder(value) {}
+    explicit Constant(int value) : PlaceHolder(0, value) {}
+
     std::ostream &print(std::ostream &stream) const override;
 };
 

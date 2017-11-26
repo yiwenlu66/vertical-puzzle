@@ -28,21 +28,39 @@ class Constraint {
 public:
     Constraint(std::vector<PlaceHolder *> input, std::vector<PlaceHolder *> output, std::string rpn)
             : _input(std::move(input)), _output(std::move(output)), _rpn(std::move(rpn)) {}
-    int get_n_unbound_input();
-    void bind_output();
+    int get_n_unbound_input(int t);
+
+    ExplicitVariable *set_binding_time_for_first_unbound_explicit_input(int t);
+    std::vector<ExplicitVariable *> set_binding_time_for_output(int t);
+    bool is_bound(int t) {
+        return t >= _t_bound;
+    }
+
+    bool bind_output(int t, std::vector<bool> &digit_used);             // return true for success, false for failure
+
     friend std::ostream &operator<<(std::ostream &stream, Constraint const &constraint);
+    friend class ConstraintChain;
 
 private:
+    int _t_bound = std::numeric_limits<int>::max();
     const std::vector<PlaceHolder *> _input, _output;
     const std::string _rpn;
 };
 
-struct ConstraintChain {
-    std::vector<Constraint> constraints;
-    int frontier = 0;
-    ConstraintChain(std::vector<Constraint> constraints)
-            : constraints(std::move(constraints)) {}
+class ConstraintChain {
+public:
+    explicit ConstraintChain(std::vector<Constraint> constraints)
+            : _constraints(std::move(constraints)) {}
+
+    Constraint &get_frontier(int t);
+    bool is_bound(int t) {
+        return _constraints.back().is_bound(t);
+    }
+
     friend std::ostream &operator<<(std::ostream &stream, ConstraintChain const &constraint_chain);
+
+private:
+    std::vector<Constraint> _constraints;
 };
 
 #endif
