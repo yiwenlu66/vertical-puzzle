@@ -140,7 +140,9 @@ void TextStreamParser::_parse_stream(std::istream &stream) {
                 }
 
                 // break after all partial products are stored
-                if (i == multiplier.size() - 1) {
+                if (multiplier.size() == 1) {
+                    _parser_state = WAIT_OPTR;
+                } else if (i == multiplier.size() - 1) {
                     width += i;     // recover width to that of the first partial product
                     _parser_state = MUL_OUT;
                 }
