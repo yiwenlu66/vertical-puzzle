@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
             for (int j = 0; j < 10; ++j) {
                 int no = text_parser.get_lut_letter_to_explicit_variable_no()[j];
                 if (no != -1) {
-                    std::cout << static_cast<char>('A' + no) << '=' << solution[no] << std::endl;
+                    std::cout << static_cast<char>('A' + j) << '=' << solution[no] << std::endl;
                 }
             }
             std::cout << std::endl;
