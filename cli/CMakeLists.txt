@@ -5,5 +5,5 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories(../core)
 
-set(SOURCE_FILES main.cpp ../core/parsers.cpp ../core/utils.cpp ../core/constraint.cpp ../core/placeholder.cpp ../core/solver.cpp)
+set(SOURCE_FILES main.cpp ../core/parsers.cpp ../core/utils.cpp ../core/constraint.cpp ../core/placeholder.cpp ../core/solver.cpp cli.cpp cli.h)
 add_executable(vertical-puzzle-cli ${SOURCE_FILES})
