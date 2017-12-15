@@ -3,6 +3,6 @@
 
 #include <iostream>
 
-void vertical_puzzle_cli(std::ostream &stream, std::string path_to_puzzle, int max_solutions, bool verbose);
+std::vector<std::vector<int> > vertical_puzzle_cli(std::ostream &ostream, std::istream &istream, int max_solutions, bool verbose);
 
 #endif
