@@ -6,8 +6,10 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QFontDatabase>
+#include <QMimeData>
 #include <sstream>
 #include "cli.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,9 +19,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->solutionBar->setVisible(false);
     ui->maxSolutionsLineEdit->setValidator(new QIntValidator(1, 99, this));
     ui->consoleOutputTextEdit->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
+    this->setAcceptDrops(true);
     connect(ui->clearButton, &QPushButton::clicked, ui->inputGrid, &InputGrid::clear);
     connect(ui->actionSave_puzzle, &QAction::triggered, this, &MainWindow::savePuzzle);
-    connect(ui->actionLoad_puzzle, &QAction::triggered, this, &MainWindow::loadPuzzle);
+    connect(ui->actionLoad_puzzle, &QAction::triggered, this, [&](){ loadPuzzle(); });
     connect(ui->solveButton, &QPushButton::clicked, this, &MainWindow::solve);
     connect(ui->solutionPrevButton, &QPushButton::clicked, this, [&](){ --_solution_no; showSolutions(); });
     connect(ui->solutionNextButton, &QPushButton::clicked, this, [&](){ ++_solution_no; showSolutions(); });
@@ -49,10 +52,12 @@ void MainWindow::savePuzzle()
     file.close();
 }
 
-void MainWindow::loadPuzzle()
+void MainWindow::loadPuzzle(QString fileName)
 {
     showPuzzle();
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load Puzzle"), QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
+    if (fileName.isEmpty()) {
+        fileName = QFileDialog::getOpenFileName(this, tr("Load Puzzle"), QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
+    }
     if (fileName.isEmpty()) {
         return;
     }
@@ -102,4 +107,29 @@ void MainWindow::showPuzzle()
     ui->solutionBar->setVisible(false);
     _solution_no = 0;
     ui->inputGrid->showPuzzle();
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    }
+}
+
+void MainWindow::dragMoveEvent(QDragMoveEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    if (!event->mimeData()->hasUrls()) {
+        return;
+    }
+    QString fileName = event->mimeData()->urls().at(0).toLocalFile();
+    loadPuzzle(fileName);
 }

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 
 namespace Ui {
 class MainWindow;
@@ -13,11 +16,13 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
     ~MainWindow();
 
-public slots:
     void savePuzzle();
-    void loadPuzzle();
+    void loadPuzzle(QString fileName = QString(""));
     void solve();
     void showSolutions();
     void showPuzzle();
